@@ -25,6 +25,14 @@ import java.nio.channels.CompletionHandler;
 
 public class MainActivity extends AppCompatActivity {
 
+    String sourcetable = "GET / HTTP/1.0\r\nUser-Agent: NTRIP RTKLIB/2.4.2\r\nAccept: */*\r\nConnection: close\r\n\r\n";
+    String NTRIPCasterURL = "193.134.218.96";
+    int NTRIPCasterPort = 5001;
+
+    String host = "192.168.242.161";
+    int port = 23;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,9 +43,10 @@ public class MainActivity extends AppCompatActivity {
             try {
                 // Send the message
 //                InetAddress address = InetAddress.getByName("192.168.1.10");
-                Socket socket = new Socket("192.168.242.161", 23);
+                Socket socket = new Socket(NTRIPCasterURL,NTRIPCasterPort);
                 OutputStream outputStream = socket.getOutputStream();
-                outputStream.write("Bonsoir".getBytes());
+                System.out.println("Send to NTRIPCaster :\n"+sourcetable);
+                outputStream.write(sourcetable.getBytes());
                 socket.close();
             } catch (IOException e) {
                 Log.e("TCP", "Error sending message", e);
@@ -48,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         Thread thread1 = new Thread(() -> {
 
             try {
-                Socket socket = new Socket("192.168.242.161", 23);
+                Socket socket = new Socket(NTRIPCasterURL, NTRIPCasterPort);
                 // Obtenir un flux d'entrée
                 InputStream inputStream = socket.getInputStream();
 
@@ -65,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Décoder la réponse
                 String response = new String(data, 0, bytesRead);
-                System.out.println("My response" + response);}
+                System.out.println("My response : " + response);}
 
                 // Fermer le socket
                 socket.close();
@@ -80,6 +89,5 @@ public class MainActivity extends AppCompatActivity {
         thread.start();
         thread1.start();
     }
-
 
 }
